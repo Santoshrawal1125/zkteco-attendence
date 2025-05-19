@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from .models import User, Staff
+from .models import User, Staff, School, Department
 from django.contrib.auth.hashers import make_password
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,7 +26,7 @@ class StaffSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Staff
-        fields = ['id', 'staff_id', 'position', 'user']
+        fields = ['id', 'staff_id', 'department', 'position', 'device_user_id', 'school', 'user']
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
@@ -42,3 +43,16 @@ class StaffSerializer(serializers.ModelSerializer):
             user_serializer.is_valid(raise_exception=True)
             user_serializer.save()
         return super().update(instance, validated_data)
+
+
+class SchoolSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = School
+        fields = "__all__"
+
+
+class DepartmentSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = ['dept_name']
+
