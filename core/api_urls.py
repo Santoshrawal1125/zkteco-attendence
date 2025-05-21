@@ -1,13 +1,11 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .api_views import StaffViewSet, SchoolViewSet, DepartmentViewSet
-
-router = DefaultRouter()
-router.register(r'staff', StaffViewSet)
-router.register(r'school', SchoolViewSet)
-router.register(r'department', DepartmentViewSet)
+from django.urls import path
+from .api_views import StaffBySchoolDepartment, DepartmentBySchool, SchoolView
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('school/<int:school_id>/department/<int:department_id>/staff/', StaffBySchoolDepartment.as_view(),
+         name='staff-by-department'),
+    path('school/<int:school_id>/department/', DepartmentBySchool.as_view(), name='department-by-school'),
+    path('school/', SchoolView.as_view(), name='schools-list'),
+    path('school/<int:school_id>/', SchoolView.as_view(), name='schools-by-id')
 
 ]
