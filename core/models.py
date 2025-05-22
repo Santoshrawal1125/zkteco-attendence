@@ -82,6 +82,10 @@ class Device(models.Model):
 
 
 # Unified Attendance model for staff and student
+from django.utils.timezone import localtime
+import datetime
+
+
 class Attendance(models.Model):
     ATTENDEE_TYPE = [
         ('staff', 'Staff'),
@@ -97,9 +101,30 @@ class Attendance(models.Model):
     attendee_type = models.CharField(max_length=10, choices=ATTENDEE_TYPE)
     staff = models.ForeignKey(Staff, null=True, blank=True, on_delete=models.CASCADE)
     student = models.ForeignKey(Student, null=True, blank=True, on_delete=models.CASCADE)
+
     timestamp = models.DateTimeField(auto_now_add=True)
+    arrival_time = models.DateTimeField(null=True, blank=True)
+    departure_time = models.DateTimeField(null=True, blank=True)
+
     device = models.ForeignKey(Device, on_delete=models.SET_NULL, null=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='present')
+    department = models.ForeignKey(Department, null=True, blank=True, on_delete=models.SET_NULL)
+    student_class = models.ForeignKey(StudentClass, null=True, blank=True, on_delete=models.SET_NULL)
+    school = models.ForeignKey(School, null=True, blank=True, on_delete=models.SET_NULL)
+
+    def save(self, *args, **kwargs):
+        if self.arrival_time:
+            local_arrival = localtime(self.arrival_time)
+            office_start = datetime.time(9, 0)  # 9:00 AM
+
+            if local_arrival.time() > office_start:
+                self.status = 'late'
+            else:
+                self.status = 'present'
+        else:
+            self.status = 'absent'
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.attendee_type} - {self.status} - {self.timestamp}"

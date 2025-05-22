@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Staff, User, Department, School, SchoolAdmin
+from .models import Staff, User, Department, School, SchoolAdmin, StudentClass, Student, Attendance
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -38,3 +38,22 @@ class SchoolSerializers(serializers.ModelSerializer):
     def get_school_admin(self, obj):
         admin = getattr(obj, 'schooladmin', None)
         return admin.id if admin else None
+
+
+class StudentClassSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = StudentClass
+        fields = "__all__"
+
+
+class StudentSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = "__all__"
+
+
+class AttendanceSerializers(serializers.ModelSerializer):
+
+    class Meta:
+        model = Attendance
+        fields = "__all__"
